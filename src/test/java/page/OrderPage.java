@@ -1,13 +1,10 @@
 package page;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
 import java.time.Duration;
+import static org.junit.Assert.assertTrue;
 
 public class OrderPage {
     private WebDriver driver;
@@ -15,69 +12,137 @@ public class OrderPage {
     public OrderPage(WebDriver driver) {
         this.driver = driver;
     }
+    //ЛОКАТОРЫ
+
+    //поле имени
+    public final By nameForm = By.xpath("//input[@placeholder='* Имя']");
+    //поле фамилии
+    public final By surnameForm = By.xpath("//input[@placeholder='* Фамилия']");
+    //поле адреса
+    public final By addressForm = By.xpath("//input[@placeholder='* Адрес: куда привезти заказ']");
+    //поле метро
+    public final By metroDrop = By.className("select-search__input");
+    //поле телефона
+    public final By phone = By.xpath("//input[@placeholder='* Телефон: на него позвонит курьер']");
+    //кнопка "Далее"
+    public final By nextButton = By.className("Button_Middle__1CSJM");
+    //поле дата доставки
+    public final By dateForm  = By.xpath("//input[@placeholder='* Когда привезти самокат']");
+    //поле комментария
+    public final By searchComment = By.xpath("//input[@placeholder='Комментарий для курьера']");
+    //кнопка "Заказать"
+    public final By orderButton = By.xpath("//button[contains(@class, 'Button_Middle__1CSJM') and contains(text(), 'Заказать')]");
+    //кнопка "Да"
+    public final By confirmButton = By.xpath("//button[contains(@class, 'Button_Middle__1CSJM') and contains(text(), 'Да')]");
+    //окно "Заказ оформлен" (не совсем
+    public final By orderConfirm = By.xpath("//div[contains(@class,'Order_ModalHeader__3FDaJ') and contains(text(),'Заказ оформлен')]");
+
+    //чекбокс черного самоката
+    private final By blackCheckbox = By.cssSelector("label[for='black'] input");
+    //чекбокс серого самоката
+    private final By greyCheckbox  = By.cssSelector("label[for='grey'] input");
+
+
+    //МЕТОДЫ
+
     //заполнение имени
-    public WebElement nameField() {
-        return driver.findElement(By.xpath("//input[@placeholder='* Имя']"));
+    public void nameField(String name) {
+         driver.findElement(nameForm).sendKeys(name);
     }
+
     //заполнение фамилии
-    public WebElement surnameField() {
-        return driver.findElement(By.xpath("//input[@placeholder='* Фамилия']"));
+    public void surnameField(String surname) {
+        driver.findElement(surnameForm).sendKeys(surname);
     }
+
     //заполнение адреса
-    public WebElement addressField() {
-        return driver.findElement(By.xpath("//input[@placeholder='* Адрес: куда привезти заказ']"));
+    public void addressField(String address) {
+        driver.findElement(addressForm).sendKeys(address);
     }
-    //нажатие на поле метро
-    public WebElement metroDropdown() {
-        return driver.findElement(By.className("select-search__input"));
+
+    //заполнение метро
+    public void metroDropdown(String metro) {
+        driver.findElement(metroDrop).sendKeys(metro);
     }
     //выбор станции метро
     public WebElement metroOption(String metro) {
         return driver.findElement(By.xpath("//div[@class='select-search__select']//div[text()='" + metro + "']"));
     }
+
     //номер телефона
-    public WebElement phoneField() {
-        return driver.findElement(By.xpath("//input[@placeholder='* Телефон: на него позвонит курьер']"));
+    public void phoneField(String phoneNumber) {
+        driver.findElement(phone).sendKeys(phoneNumber);
     }
+
     //кнопка для продолжения заказа
-    public WebElement nextButton() {
-        return driver.findElement(By.className("Button_Middle__1CSJM"));
+    public void clickNextButton() {
+        driver.findElement(nextButton).click();
     }
+    //заполнение 1 формы
+    public void fieldForm1(String name, String surname, String address, String metro, String phoneNumber) {
+        nameField(name);
+        surnameField(surname);
+        addressField(address);
+        metroDropdown(metro);
+        metroOption(metro).click();
+        phoneField(phoneNumber);
+    }
+
+
     //дата доставка
-    public WebElement dateField() {
-        return driver.findElement(By.xpath("//input[@placeholder='* Когда привезти самокат']"));
+    public void dateField(String date) {
+         driver.findElement(dateForm).sendKeys(date, Keys.ENTER);
     }
 
     //срок аренды
-    public WebElement rentalPeriodDropdown(String dayRent) {
+    public void rentalPeriodDropdown(String dayRent) {
         WebElement dropdown = driver.findElement(By.className("Dropdown-root"));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", dropdown);
         dropdown.click();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         WebElement option = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class,'Dropdown-option') and text()='" + dayRent + "']")));
-        return option;
+        option.click();
     }
 
-    //выбор цвета самоката
-    public WebElement scooterColor(String color) {
-        return driver.findElement(By.xpath("//label[contains(text(), '" + color + "')]"));
+    //выбор черного цвета
+    public void clickCheckBoxBlack(){
+        driver.findElement(blackCheckbox).click();
     }
-    //поле комментария для курьера
-    public WebElement commentField() {
-        return driver.findElement(By.xpath("//input[@placeholder='Комментарий для курьера']"));
+    //выбор серого цвета
+    public void clickCheckBoxGrey(){
+        driver.findElement(greyCheckbox).click();
     }
+
+    //заполнение поля комменатрия
+    public void commentField(String comment) {
+        driver.findElement(searchComment).sendKeys(comment);
+    }
+
+    //заполнение 2-ой формы
+    public void fieldForm2(String date, String dayRent, String color, String comment) {
+        dateField(date);
+        rentalPeriodDropdown(dayRent);
+        if ("black".equals(color)) {
+            clickCheckBoxBlack();
+        } else {
+            clickCheckBoxGrey();
+        }
+
+        commentField(comment);
+    }
+
     //кнопка Заказать
-    public WebElement orderButton() {
-        return driver.findElement(By.xpath("//button[contains(@class, 'Button_Middle__1CSJM') and contains(text(), 'Заказать')]"));
-    }
-    //кнопка подтверждения заказа
-    public WebElement confirmButton() {
-        return driver.findElement(By.xpath("//button[contains(@class, 'Button_Middle__1CSJM') and contains(text(), 'Да')]"));
-    }
-    //окно подтверждения заказа
-    public WebElement orderConfirm() {
-        return driver.findElement(By.className("Order_Modal__YZ-d3"));
+    public void сlickOrderButton() {
+       driver.findElement(orderButton).click();
     }
 
+    //кнопка подтверждения заказа
+    public void clickConfirmButton() {
+       driver.findElement(confirmButton).click();
+    }
+
+    //проверка окна подтверждения заказа
+    public void checkOrderConfirm() {
+        assertTrue(driver.findElement(orderConfirm).isDisplayed());
+    }
 
 }
